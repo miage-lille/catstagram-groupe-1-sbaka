@@ -37,6 +37,7 @@ const DisplayCounter = styled.span`
 
 const Counter = () => {
   const counter = useSelector(counterSelector);
+  console.log(counter);
   const dispatch = useDispatch();
   return (
     <Container>
@@ -44,7 +45,9 @@ const Counter = () => {
         disabled={counter <= 3}
         onClick={() => dispatch(decrement())}> - </Button>
       <DisplayCounter>{counter}</DisplayCounter>
-      <Button onClick={() => dispatch(increment())}> + </Button>
+      <Button 
+        
+      onClick={() => dispatch(increment())}> + </Button>
     </Container>
   );
 };
