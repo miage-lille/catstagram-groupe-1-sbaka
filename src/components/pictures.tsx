@@ -1,7 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { picturesSelector } from '../reducer';
+import { getSelectedPicture, picturesSelector } from '../reducer';
+import ModalPortal from './modal';
 
 const Container = styled.div`
   padding: 1rem;
@@ -21,13 +22,25 @@ const Image = styled.img`
 `;
 const Pictures = () => {
   const pictures = useSelector(picturesSelector);
-  console.log(pictures.length);
-  
-  return <Container>
-    {pictures.map((picture, index) => (
-      <Image key={index} src={picture.previewFormat} alt={picture.author} />
-    ))}
-  </Container>;
+
+  const selectedPicture = useSelector(getSelectedPicture);
+ 
+  const dispatch = useDispatch();
+
+  return <>
+
+    <Container>
+      {pictures.map((picture, index) => (
+        <Image key={index} src={picture.previewFormat} alt={picture.author} onClick={
+          () => {
+            dispatch({ type: 'SELECT_PICTURE', picture: picture });
+          }
+        } />
+      ))}
+    </Container>
+    {selectedPicture && <ModalPortal largeFormat={selectedPicture.largeFormat} close={() => {dispatch({type: 'CLOSE_MODAL'}) }} />}
+
+  </>;
 };
 
 export default Pictures;

@@ -37,7 +37,6 @@ const DisplayCounter = styled.span`
 
 const Counter = () => {
   const counter = useSelector(counterSelector);
-  console.log(counter);
   const dispatch = useDispatch();
   return (
     <Container>

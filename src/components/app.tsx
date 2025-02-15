@@ -4,14 +4,14 @@ import { store } from '../store';
 import Counter from './counter';
 import Pictures from './pictures';
 
-const App = () => (
-  <Provider store={store}>
-    <>
+const App = () => {
+
+  return (
+    <Provider store={store}>
       <Counter />
       <Pictures />
-      <div>Hello World ! Go to build your Catstagram 💪 !</div>
-    </>
-  </Provider>
-);
+    </Provider>
+  );
+}
 
 export default App;
