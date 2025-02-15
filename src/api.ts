@@ -1,3 +1,8 @@
-export const loading = (): unknown => ({}); // TODO : Update this value !
-export const success = (payload: unknown): unknown => ({}); // TODO : Update this value !
-export const failure = (error: string): unknown => ({}); // TODO : Update this value !
+import { Loading, Success, Failure } from './types/api.type';
+import { Picture } from './types/picture.type';
+
+export const loading = (): Loading => ({ type: 'LOADING' });
+
+export const success = (pictures: Picture[]): Success => ({ type: 'SUCCESS', pictures });
+
+export const failure = (error: Error): Failure => ({ type: 'FAILURE', error });

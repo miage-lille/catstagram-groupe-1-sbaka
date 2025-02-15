@@ -1,39 +1,72 @@
-import { Loop, liftState } from 'redux-loop';
+import { cmdFetch } from './commands';
+import { Loop, liftState, loop } from 'redux-loop';
 import { compose } from 'redux';
 import { Actions } from './types/actions.type';
+import { Picture } from './types/picture.type';
+import picturesRaw from './fake-datas.json';
+import { fetchCatsRequest } from './actions';
+import { Failure, Loading, Success } from './types/api.type';
+import { failure, loading, success } from './api';
 
-export type State = unknown; // TODO : Update this type !
+export type State = {
+  counter: number;
+  apiStatus: Success | Loading | Failure;
+  selectedPicture?: Picture;
+};
 
-export const defaultState = {}; // TODO : Update this value !
+const defaultState: State = {
+  counter: 3,
+  apiStatus: success([]),
+};
 
 export const reducer = (state: State | undefined, action: Actions): State | Loop<State> => {
   if (!state) return defaultState; // mandatory by redux
+
   switch (action.type) {
-    case 'INCREMENT':
-      throw 'Not Implemented';
-    case 'DECREMENT':
-      throw 'Not Implemented';
+    case 'INCREMENT': {
+      const newCounter = state.counter + 1 > picturesRaw.length ? state.counter : state.counter + 1;
+      const newState = {
+        ...state,
+        counter: newCounter,
+        pictures: picturesRaw.slice(-newCounter),
+      };
+      // Instead of calling dispatch via useDispatch, return a loop with a command to dispatch fetchCatsRequest
+      return loop(newState, cmdFetch(fetchCatsRequest(newCounter)));
+    }
+    case 'DECREMENT': {
+      const newCounter = state.counter < 3 ? state.counter : state.counter - 1;
+      const newState = {
+        ...state,
+        counter: newCounter,
+        pictures: picturesRaw.slice(-newCounter),
+      };
+      return loop(newState, cmdFetch(fetchCatsRequest(newCounter)));
+    }
     case 'SELECT_PICTURE':
-      throw 'Not Implemented';
+      return { ...state, selectedPicture: action.picture };
     case 'CLOSE_MODAL':
-      throw 'Not Implemented';
+      return { ...state, selectedPicture: undefined };
     case 'FETCH_CATS_REQUEST':
-      throw 'Not Implemented';
+      return { ...state, apiStatus: loading() };
     case 'FETCH_CATS_COMMIT':
-      throw 'Not Implemented';
+      return { ...state, apiStatus: success(action.payload) };
     case 'FETCH_CATS_ROLLBACK':
-      throw 'Not Implemented';
+      return { ...state, apiStatus: failure(action.error) };
+    default:
+      return state;
   }
 };
 
-export const counterSelector = (state: State) => {
-  throw 'Not Implemented';
-};
+export const counterSelector = (state: State) => state.counter;
 export const picturesSelector = (state: State) => {
-  throw 'Not Implemented';
+  const { apiStatus } = state;
+  if (apiStatus.type === 'SUCCESS') {
+    return apiStatus.pictures;
+  }
+  console.log('apiStatus', apiStatus);
+  
+  return [];
 };
-export const getSelectedPicture = (state: State) => {
-  throw 'Not Implemented';
-};
+export const getSelectedPicture = (state: State) => state.selectedPicture;
 
 export default compose(liftState, reducer);
